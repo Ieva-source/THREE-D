@@ -24,3 +24,15 @@ mel.sp<-melt(SP                    #converts the data from the community data ta
              ,id=c("Site","PlotID","Treatment"), #to a table format. id= Identifies columns not to 'melt'
              value.name = "abund")      #value.name gives a name to the created column
              
+names(mel.sp)=c("Site","PlotID","Treatment","Species","Abund") #renames the columns
+
+
+str(mel.sp)               ##examine the structure of mel.sp
+
+#Still working on this:
+
+sp=SP[,4:length(SP)]      ##Creates sp removeing none species related data
+env=env[rowSums(sp)!=0,]  ##Removes rows with no species data from env
+sp=sp[rowSums(sp)!=0,]    ##Removes rows with no species data from sp
+rownames(sp)=env$id       ##Gives the rows names
+rownames(env)=env$id
