@@ -44,7 +44,8 @@ Model_2<-aov(biomass~treatment*site, data=Testing2)
 
 summary(Model_2)
 
-#############
+##Assumption testig:##
+
 par(mfrow=c(2,2))
 
 plot(Model_2)
@@ -54,5 +55,19 @@ plot(Model_2)
 uhat2<-resid(Model_2)
 shapiro.test(uhat2)
 
+###Post-hoc test: Since we found a significant interaction effect###
 
+###Question to AUD: what am I doing wrong here?###
+#I constantly get the error message saying that the "cld" function could not be found##
 
+library("lsmeans")
+library("multcompView")
+
+posthoc <-lsmeans(Model_2,
+                  pairwise~treatment*site,
+                  adjust = "tukey")
+posthoc
+
+cld(posthoc,
+    alpha=0.05,
+    Letter=letters)
