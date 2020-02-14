@@ -3,14 +3,43 @@
 
 #Boxplots for the total biomass of the permanent plots:
 
-Permanent<-read.csv("Total_Biomass_Permanent_Plots_Final.csv",  
+Permanent<-read.csv("Total_Biomass_Permanent_Plots.csv",  
                     sep=";",                        
                     dec=",",                        
                     header=TRUE,                    
                     stringsAsFactors = FALSE)        
 
-boxplot(Total.Biomass~Site, data=Permanent, main="Total above-ground biomass in permanent plots", xlab="Study sites and treatment", ylab="Total above-ground biomass (g)")
+Permanent$elevation<-factor(Permanent$elevation,
+                    labels = c("VO","HO","JC","BC","LC"))
 
+boxplot(bioperday~elevation, data=Permanent, main="Biomass per day in permanent plots", xlab="Elevation and treatment", ylab="Biomass/day (g)", col=rainbow(2))
+
+##Just saving the code##
+Permanent$elevation<-factor(Permanent$elevation,
+                            labels = c("469O","469C","700O","700C","920O","920C","1100O","1100C","1290O","1290C"))
+
+#Now with standardized data (biomass/day)####
+#The below line is failed:##
+elevation<- factor(elevation, level=c("VO","VC","HO","HC","JO","JC","BO","BC","LO","LC"))
+
+boxplot(bioperday~elevation, data=Permanent, main="Biomass/day in permanent plots", xlab="Study sites and treatment", ylab="Biomass/day (g)", col=rainbow(2))
+
+###Trying the ggplot instead with standardized data set###
+
+P<-read.csv("Testing.csv",  
+                    sep=";",                        
+                    dec=",",                        
+                    header=TRUE,                    
+                    stringsAsFactors = FALSE)  
+
+library(ggplot2)
+
+P$elevation<-factor(P$elevation,
+                    labels = c("469","700","920","1100","1290"))
+
+p10<-ggplot(P, aes(x = elevation, y = bioperday)) +
+  geom_boxplot()
+p10
 #Tried the Notched Boxplot as well:
 
 boxplot(Total.Biomass~Site*Treatment, data=Permanent, notch=TRUE, col=(c("gold","darkgreen")), main="Total biomass in permanent plots", xlab="Study sites and treatment", ylab="Total biomass")
@@ -22,8 +51,23 @@ Vikesland.Temporary<-read.csv("Biomas_Temporary_Vikesland.csv",
                               dec=",",                        
                               header=TRUE,                    
                               stringsAsFactors = FALSE)  
+par(mfrow=c(1,2))
 
-boxplot(Total~Treatment.Time, data=Vikesland.Temporary, main="Total above-ground biomass in temporary plots in Vikesland", xlab="Treatment x Time", ylab="Total above-ground biomass (g)")
+boxplot(Totalbiomass~Harvest.nr, data=Vikesland.Temporary, main="Above-ground biomass in Vikesland", xlab="Harvest Nr x treatment", ylab="Above-ground biomass (g)", col=c(4,2))
+
+legend(x=0.1, y=29.5,
+       legend=c("Cage","Open"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
+
+boxplot(bioperday~Harvest.nr, data=Vikesland.Temporary, main="Biomass/day in Vikesland", xlab="Harvest Nr x treatment", ylab="Biomass/day (g)", col=c(4,2))
+
+legend(x=-5,y=29.5,
+       legend=c("Cage","Open"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
 
 #Boxplots for the total biomass of the temporary plots in Hogsete:
 
@@ -33,7 +77,23 @@ Hogsete.Temporary<-read.csv("Biomass_Temporary_Hogsete.csv",
                             header=TRUE,                    
                             stringsAsFactors = FALSE)  
 
-boxplot(Total~Treatment.Time, data=Hogsete.Temporary, main="Total above-ground biomass in temporary plots in Hogsete", xlab="Treatment x Time", ylab="Total above-ground biomass (g)")
+par(mfrow=c(1,2))
+
+boxplot(Total~Harvest.nr, data=Hogsete.Temporary, main="Above-ground biomass in tempo.plots in Hogsete", xlab="Harvest nr. x Treatment", ylab="Total above-ground biomass (g)", col=c(2,4))
+
+legend("topleft",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
+
+boxplot(bioperday~Harvest.nr, data=Hogsete.Temporary, main="Biomass/day in temporary plots in Hogsete", xlab="Harvest nr. x Treatment", ylab="Biomass/day (g)", col=c(2,4))
+
+legend(x="topleft",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
 
 #Boxplots for the total biomass of the temporary plots in Joesete:
 
@@ -43,7 +103,23 @@ Joesete.Temporary<-read.csv("Biomass_Temporary_Joesete.csv",
                             header=TRUE,                    
                             stringsAsFactors = FALSE)  
 
-boxplot(Total~Treatment.Time, data=Joesete.Temporary, main="Total above-ground biomass in temporary plots in Joesete", xlab="Treatment x Time", ylab="Total above-ground biomass (g)")
+par(mfrow=c(1,2))
+
+boxplot(Total~Harvest.nr, data=Joesete.Temporary, main="Above-ground biomass in tempo.plots in Joasete", xlab="Harvest nr. x Treatment", ylab="Total above-ground biomass (g)", col=c(2,4))
+
+legend("topright",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
+
+boxplot(bioperday~Harvest.nr, data=Joesete.Temporary, main="Biomass/day in temporary plots in Joasete", xlab="Harvest nr. x Treatment", ylab="Biomass/day (g)", col=c(2,4))
+
+legend(x="topright",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
 
 #Boxplots for the total biomass of the temporary plots in Between:
 
@@ -53,7 +129,23 @@ Between.Temporary<-read.csv("Biomass_Temporary_Between.csv",
                             header=TRUE,                    
                             stringsAsFactors = FALSE)  
 
-boxplot(Total~Treatment.Time, data=Between.Temporary, main="Total above-ground biomass in temporary plots in Between", xlab="Treatment x Time", ylab="Total above-ground biomass (g)")
+par(mfrow=c(1,2))
+
+boxplot(Total~Harvest.nr, data=Between.Temporary, main="Above-ground biomass in tempo.plots in Between", xlab="Harvest nr. x Treatment", ylab="Total above-ground biomass (g)", col=c(2,4))
+
+legend("topleft",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
+
+boxplot(bioperday~Harvest.nr, data=Between.Temporary, main="Biomass/day in temporary plots in Between", xlab="Harvest nr. x Treatment", ylab="Biomass/day (g)", col=c(2,4))
+
+legend(x="topleft",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
 
 #Boxplots for the total biomass of the temporary plots in Liahovden:
 
@@ -63,7 +155,23 @@ Liahovden.Temporary<-read.csv("Biomass_Temporary_Laihovden.csv",
                               header=TRUE,                    
                               stringsAsFactors = FALSE)  
 
-boxplot(Total~Treatment.Time, data=Liahovden.Temporary, main="Total above-ground biomass in temporary plots in Liahovden", xlab="Treatment x Time", ylab="Total above-ground biomass (g)")
+par(mfrow=c(1,2))
+
+boxplot(Total~Harvest.nr, data=Liahovden.Temporary, main="Above-ground biomass in tempo.plots in Liahovden", xlab="Harvest nr. x Treatment", ylab="Total above-ground biomass (g)", col=c(2,4))
+
+legend("topleft",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
+
+boxplot(bioperday~Harvest.nr, data=Liahovden.Temporary, main="Biomass/day in temporary plots in Liahovden", xlab="Harvest nr. x Treatment", ylab="Biomass/day (g)", col=c(2,4))
+
+legend(x="topleft",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
 
 #############################################################
 ##############Boxolots for functional groups#################
@@ -77,32 +185,40 @@ Functional.Permanent<-read.csv("Functional_Group_Biomass_Permanent_Plots.csv",
                                header=TRUE,                    
                                stringsAsFactors = FALSE)        
 
-boxplot(Graminoids~Site.Treatment, data=Functional.Permanent, main="Graminoid above-ground biomass in permanent plots", xlab="Study sites and treatments", ylab="Total above-ground biomass (g)")
 
-#Boxplots for the forbs in the permanent plots:
+par(mfrow=c(2,2))
 
+boxplot(Gperday~Site.Treatment, data=Functional.Permanent, main="Graminoid Biomass/day in permanent plots", xlab="Study sites and treatments", ylab="Biomass/day (g)", col=c(2,4))
 
-boxplot(Forbs~Site.Treatment, data=Functional.Permanent, main="Forb above-ground biomass in permanent plots", xlab="Study sites and treatments", ylab="Total above-ground biomass (g)")
+legend("bottomright",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
 
-#Boxplots for the bryophytes in the permanent plots:
+boxplot(Fperday~Site.Treatment, data=Functional.Permanent, main="Forb Biomass/day in permanent plots", xlab="Study sites and treatments", ylab="Biomass/day (g)", col=c(2,4))
 
+legend("topleft",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
 
-boxplot(Bryophytes~Site.Treatment, data=Functional.Permanent, main="Bryophyte above-ground biomass in permanent plots", xlab="Study sites and treatments", ylab="Total above-ground biomass (g)")
+boxplot(Bperday~Site.Treatment, data=Functional.Permanent, main="Bryophyte Biomass/day in permanent plots", xlab="Study sites and treatments", ylab="Biomass/day (g)", col=c(2,4))
 
-#Boxplots for the lichen in the permanent plots:
+legend("topleft",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
 
+boxplot(Lperday~Site.Treatment, data=Functional.Permanent, main="Lichen Biomass/day in permanent plots", xlab="Study sites and treatments", ylab="Biomass/day (g)", col=c(2,4))
 
-boxplot(Lichen~Site.Treatment, data=Functional.Permanent, main="Lichen above-ground biomass in permanent plots", xlab="Study sites and treatments", ylab="Total above-ground biomass (g)")
-
-#Boxplots for the shrubs in the permanent plots:
-
-
-boxplot(Shrubs~Site.Treatment, data=Functional.Permanent, main="Shrub above-ground biomass in permanent plots", xlab="Study sites and treatments", ylab="Total above-ground biomass (g)")
-
-#Boxplots for the litter in the permanent plots:
-
-
-boxplot(Litter~Site.Treatment, data=Functional.Permanent, main="Litter above-ground biomass in permanent plots", xlab="Study sites and treatments", ylab="Total above-ground biomass (g)")
+legend("topleft",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
 
 #############################################################
 ##############Boxplots for functional groups#################
@@ -112,15 +228,39 @@ boxplot(Litter~Site.Treatment, data=Functional.Permanent, main="Litter above-gro
 
 #Boxplots for the graminoids in the tempo plots in Vikesland:
 
-Functional.Temporary<-read.csv("Functional_Group_Biomass_Temporary_Plots.csv",  
+V<-read.csv("Biomas_Temporary_Vikesland.csv",  
                                sep=";",                        
                                dec=",",                        
                                header=TRUE,                    
                                stringsAsFactors = FALSE)
 
-Vik.gram<-Functional.Temporary[c(1:18),c(4:5)]
+boxplot(Gperday~Harvest.nr, data=V, main="Graminoid Biomass/day in permanent plots",xlab="Harvest nr. and treatments",ylab="Biomass/day (g)", col=c(2,4))
 
-boxplot(Graminoids~Site.Treatment.Time, data=Vik.gram, main="Graminoid above-ground biomass in temporary plots in Vikesland", xlab="Treatments and time", ylab="Total above-ground biomass (g)")
+
+boxplot(Fperday~Site.Treatment, data=Functional.Permanent, main="Forb Biomass/day in permanent plots", xlab="Study sites and treatments", ylab="Biomass/day (g)", col=c(2,4))
+
+legend("topleft",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
+
+boxplot(Bperday~Site.Treatment, data=Functional.Permanent, main="Bryophyte Biomass/day in permanent plots", xlab="Study sites and treatments", ylab="Biomass/day (g)", col=c(2,4))
+
+legend("topleft",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
+
+boxplot(Lperday~Site.Treatment, data=Functional.Permanent, main="Lichen Biomass/day in permanent plots", xlab="Study sites and treatments", ylab="Biomass/day (g)", col=c(2,4))
+
+legend("topleft",
+       legend=c("Open","Cage"),
+       col=c(4,2),
+       pch=15,
+       bty="n")
+
 
 #Boxplots for the forbs in the tempo plots in Vikesland:
 
