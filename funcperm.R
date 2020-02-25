@@ -11,7 +11,6 @@ F<-read.csv("Functional_Group_Biomass_Permanent_Plots.csv",
 library(ggplot2)
 library(GGally)
 library(dplyr)
-attach(F)
 
 attach(F)
 F$Site <- factor(F$Site,
@@ -147,3 +146,37 @@ annotate_figure(figure,
                 top = text_grob("Biomass/day of functional groups in permanent plots", 
                                 color = "black", face = "bold", size = 14))
 
+##########################################################################
+###The code from Aud######################################################
+##########################################################################
+
+library("tidyverse")
+dat <- read_csv2(file = "Func_Group_Perm_Plos_standardized.csv")
+figure <- dat %>%
+  pivot_longer(cols = c(-Treatment, -Site), names_to = "FunctionalGroup", values_to = "Value") %>%
+  filter(Value != 0) %>%
+  mutate(FunctionalGroup = recode(FunctionalGroup, "Fperday" = "Forbs", "Gperday" = "Graminoids","Bperday" = "Bryophytes", "Lperday" = "Lichens", "Sperday" = "Shurbs")) %>%
+  mutate(Elevation = case_when(Site == 1 ~ 469,
+                               Site == 2 ~ 700,
+                               Site == 3 ~ 920,
+                               Site == 4 ~ 1100,
+                               Site == 5 ~ 1290)) %>%
+  ggplot(aes(x = factor(Elevation), y = Value, fill = Treatment)) +
+  geom_boxplot() +
+  labs(x = "Elevation (m)", y = "Biomass per day (g)") +
+  facet_wrap(~ FunctionalGroup, scales = "free_y") + scale_fill_brewer(palette = "Accent") + theme_bw() +
+  theme(plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
+           text = element_text(size = 12, family = "Tahoma", face = "bold"),
+           axis.title = element_text(face="bold"),
+           axis.text.x=element_text(size = 11),
+           legend.position = "bottom")+
+  scale_fill_brewer(palette = "Accent") +
+  labs(fill = "Treatment")
+
+library(ggpubr)
+
+figure
+
+annotate_figure(figure,
+                top = text_grob("Above-ground biomass of functional groups and litter in permanent plots", 
+                                color = "black", face = "bold", size = 14))
