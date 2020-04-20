@@ -38,39 +38,90 @@ figure <- TV %>%
 
 figure
 
-###Data from all tempo plots from all functional groups###
+###Total biomass data from all tempo plots###
 
-Tempo<-read.csv("Biomass_Tempo_All.csv",  
-                sep=";",                        
-                dec=",",                        
-                header=TRUE,                    
-                stringsAsFactors = FALSE)
+Total<-read.csv("Total_biomass_tempo_plots.csv",  
+             sep=";",                        
+             dec=",",                        
+             header=TRUE,                    
+             stringsAsFactors = FALSE)
 
-Tempo$Timestep <- factor(Tempo$Timestep,
-                        labels = c("June", "June", "July", "July", "August", "August"))
+Total$Timestep <- factor(Total$Timestep,
+                        labels = c("June", "July", "August"))
 
-Tempo$Treatment <- factor(Tempo$Treatment,
-                     labels = c("Vikesland Control", "Vikesland Cage", "Høgsete Control","Høgsete Cage", "Joasete Control", "Joasete Cage", "In between Control", "In between Cage", "Liahovden Control", "Liahovden Cage"))
-
-###Boxolots###
-
-
-Alltempo <- Tempo %>%
-  pivot_longer(cols = c(-Treatment, -Site, -Plot.ID, -Harvest.time, -Timestep, -Bioperday), names_to = "FunctionalGroup", values_to = "Value") %>%
+Totaltempo <- Total %>%
+  pivot_longer(cols = c(-Treatment, -Timestep, -Harvest.time), names_to = "Studysites", values_to = "Value") %>%
   filter(Value != 0) %>%
-  mutate(FunctionalGroup = recode(FunctionalGroup, "Graminoids" = "Graminoids", "Forbs" = "Forbs","Bryophytes" = "Bryophytes", "Lichen" = "Lichens", "Shrubs" = "Shurbs", "Litter" = "Litter")) %>%
-  ggplot(aes(x = Timestep, y = Value, fill = Treatment, color = Treatment)) +
+  mutate(Studysites = recode(Studysites, "A" = "469m(Vikesland)", "C" = "700m(Høgsete)","B" = "900m(Joasete)", "D" = "91300m(Liahovden)")) %>%
+  ggplot(aes(x = Timestep, y = Value, fill = Treatment)) +
   geom_boxplot()+
-  scale_fill_manual(values=c("darkgreen", "chartreuse4", "red", "darkred","darkorange", "gold", "darkblue", "dodgerblue", "deeppink","pink"))+
-  scale_color_manual(values=c("black", "black", "black", "black","black", "black", "black", "black", "black","black"))+
-  labs(x="Month", y = "Biomass/day (g)") +
-  facet_wrap(~ FunctionalGroup, scales = "free_y") + theme_bw() +
+  labs(x = "Month", y = "Biomass per day (g)") +
+  facet_wrap(~ Studysites, scales = "free_y") + scale_fill_brewer(palette = "Accent") + theme_bw() +
   theme(plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
         text = element_text(size = 12, family = "Tahoma", face = "bold"),
         axis.title = element_text(face="bold"),
         axis.text.x=element_text(size = 11),
         legend.position = "bottom")
-Alltempo
+Totaltempo
+
+annotate_figure(Totaltempo,
+                top = text_grob("Total biomass grown per day in temporary plots", 
+                                color = "black", face = "bold", size = 13))
+
+Model_14<-aov(A~Treatment*Timestep, data=Total)
+
+summary(Model_14)
+
+###Cheking if the model assumptions are met###
+
+par(mfrow=c(2,2))
+
+plot(Model_14)
+
+#####Assumption 1: Normal distribution: Shapiro-Wilk test (testing for normality)####
+
+uhat14<-resid(Model_14)
+shapiro.test(uhat14)
+
+####Assumption 2: Homogeneity of variance of the groups###
+
+bartlett.test(A~Treatment, data=Total)
+
+
+###Data from all tempo plots from all functional groups###
+
+Tempo<-read.csv("Func_group_tempo_plots_biomass.csv",  
+                sep=";",                        
+                dec=",",                        
+                header=TRUE,                    
+                stringsAsFactors = FALSE)
+
+###Stacked barplot###
+
+# library
+library(ggplot2)
+
+Tempo$Site <- factor(Tempo$Site,
+                         labels = c("V", "H", "J", "L"))
+
+Tempo$Month <- factor(Tempo$Month,
+                     labels = c("June Control", "July Control", "August Control", "June Cage", "July Cage", "August Cage"))
+
+bar <- Tempo %>%
+  pivot_longer(cols = c(-Site, -Month), names_to = "FunctionalGroup", values_to = "Value") %>%
+  filter(Value != 0) %>%
+  mutate(FunctionalGroup = recode(FunctionalGroup, "1A" = "Graminoids", "2B" = "Forbs","3C" = "Bryophytes", "4D" = "Lichens", "5E" = "Shurbs", "6F" = "Litter")) %>%
+  ggplot(aes(x = Site, y = Value, fill = FunctionalGroup, fill=color)) +
+  geom_bar(position = "stack", stat="identity") +
+  scale_fill_manual(name= "Func. group", values=c("darkgreen", "red", "gold", "dodgerblue", "deeppink", "darkgrey"), labels = c("Graminoids", "Forbs", "Bryophytes", "Lichen", "Shrub", "Litter"))+
+  labs(x="Site", y = "Biomass/day (g)") +
+  facet_wrap(~ Month) + theme_bw()+
+  theme(plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
+        text = element_text(size = 12, family = "Tahoma", face = "bold"),
+        axis.title = element_text(face="bold"),
+        axis.text.x=element_text(size = 11),
+        legend.position = "right")
+bar
 
 
 annotate_figure(Alltempo,
